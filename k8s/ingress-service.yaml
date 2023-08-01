@@ -3,12 +3,37 @@ kind: Ingress
 metadata:
   name: ingress-service
   annotations:
-    kubernetes.io/ingress.class: "nginx" # quel projet utiliser
+    kubernetes.io/ingress.class: "nginx" # which projct to use
     nginx.ingress.kubernetes.io/use-regex: "true" #
-    nginx.ingress.kubernetes.io/rewrite-target: /$1 # comment la copie de ngninx doit se comporte
+    nginx.ingress.kubernetes.io/rewrite-target: /$1 # how the nginx copy must behave
+    cert-manager.io/cluster-issuer: "letsencrypt-prod" #added after generating a certificate to be able to use it
+    nginx.ingress.kubernetes.io/ssl-redirect: true # always redirect to https
 spec:
+  tls: #this part must be added after having a certificate, it tells nginx to use https et where to find the certificate
+    - hosts:
+        - sarahick.com
+        - www.sarahick.com
+      secretName: sarahick-com
   rules:
-    - http:
+    - host: sarahick.com
+      http:
+        paths:
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: client-cluster-ip-service
+                port:
+                  number: 3000
+          - path: /api/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: server-cluster-ip-service
+                port:
+                  number: 5000
+    - host: www.sarahick.com
+      http:
         paths:
           - path: /?(.*)
             pathType: Prefix
