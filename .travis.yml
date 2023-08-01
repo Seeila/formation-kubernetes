@@ -24,6 +24,5 @@ script:
 deploy:
   provider: script
   script: bash ./deploy.sh
-  target_branch: master
   on:
     branch: master
