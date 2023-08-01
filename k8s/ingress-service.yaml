@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true" #
     nginx.ingress.kubernetes.io/rewrite-target: /$1 # how the nginx copy must behave
     cert-manager.io/cluster-issuer: "letsencrypt-prod" #added after generating a certificate to be able to use it
-    nginx.ingress.kubernetes.io/ssl-redirect: true # always redirect to https
+    nginx.ingress.kubernetes.io/ssl-redirect: "true" # always redirect to https
 spec:
   tls: #this part must be added after having a certificate, it tells nginx to use https et where to find the certificate
     - hosts:
