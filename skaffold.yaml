@@ -1,0 +1,44 @@
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: scaffold-kubernetes
+build:
+  local:
+    push: false # by default scaffold pushes the image to dockerhub, no need for local dev
+  artifacts:
+    - image: shicknventive/multi-client
+      context: client #folder
+      docker:
+        dockerfile: Dockerfile.dev
+      sync: #activates mode2 of skaffold: addign the changed file instead of rebuild whole image
+        manual:
+          - src: "src/**/*.js"
+            dest: .
+          - src: "src/**/*.css"
+            dest: .
+          - src: "src/**/*.html"
+            dest: .
+    - image: shicknventive/multi-worker
+      context: worker
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        manual:
+          - src: "*.js"
+            dest: .
+    - image: shicknventive/multi-server
+      context: server
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        manual:
+          - src: "*.js"
+            dest: .
+manifests:
+  rawYaml:
+    - ./k8s/client-cluster-ip-service.yaml
+    - ./k8s/client-deployment.yaml
+    - ./k8s/server-cluster-ip-service.yaml
+    - ./k8s/server-deployment.yaml
+    - ./k8s/worker-deployment.yaml
+
